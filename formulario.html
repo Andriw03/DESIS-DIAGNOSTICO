@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/3.3.4/inputmask/inputmask.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/3.3.4/jquery.inputmask.bundle.js"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/3.3.4/css/inputmask.min.css"
+      rel="stylesheet"
+    />
+
+    <title>Formulario</title>
+  </head>
+  <body>
+    <h3>FORMULARIO DE VOTACIÓN</h3>
+    <form action="formulario.php" id="formulario" method="post">
+      <div class="formulario">
+        <div class="">
+          <label for="nombre">Nombre y Apellido</label>
+          <input type="text" name="nombre" id="nombre" required />
+        </div>
+        <div class="">
+          <label for="alias">Alias</label>
+          <input
+            type="text"
+            name="alias"
+            id="alias"
+            onblur="validarAlias()"
+            required
+          />
+        </div>
+        <div class="">
+          <label for="rut">RUT</label>
+          <input
+            type="text"
+            name="rut"
+            id="rut"
+            oninput="formatoRUT()"
+            maxlength="12"
+            required
+          />
+        </div>
+        <div class="">
+          <label for="email">Email</label>
+          <input
+            type="email"
+            name="email"
+            id="email"
+            required
+            pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+          />
+        </div>
+        <div class="">
+          <label for="region">Región</label>
+          <select name="region" id="region">
+            <option value="0">Seleccione una región</option>
+          </select>
+        </div>
+        <div class="">
+          <label for="comuna">Comuna</label>
+          <select name="comuna" id="comuna">
+            <option value="0">Seleccione una comuna</option>
+          </select>
+        </div>
+        <div class="">
+          <label for="candidato">Candidato</label>
+          <select name="candidato" id="candidato">
+            <option value="0">Seleccione un candidato</option>
+          </select>
+        </div>
+        <div id="opciones-container" class="">
+          <label for="">Como se enteró de Nosotros</label>
+        </div>
+        <input type="submit" value="Votar" />
+      </div>
+    </form>
+    <script>
+      //funcion para obtener las regiones y llenar el select
+      function obtenerRegion() {
+        $.ajax({
+          type: "GET",
+          url: "formulario.php",
+          dataType: "json",
+          success: function (data) {
+            const selectRegiones = document.getElementById("region");
+            data["regiones"].forEach((region) => {
+              const option = document.createElement("option");
+              option.value = region.idREGION;
+              option.text = region.nombreREGION;
+              selectRegiones.add(option);
+            });
+          },
+          error: function (xhr, status, error) {
+            console.log(error); // Manejar el error si lo hay
+          },
+        });
+      }
+
+      //funcion para obtener las la comunas apartir de una region
+      function obtenerComuna(regionId) {
+        comuna.innerHTML = ""; //se limpia el select
+        $.ajax({
+          type: "GET",
+          url: "formulario.php",
+          dataType: "json",
+          success: function (data) {
+            const selectComunas = document.getElementById("comuna");
+            const comunasFiltradas = data["comunas"].filter(
+              (comuna) => comuna.idREGION == regionId
+            );
+            const option = document.createElement("option");
+            option.value = "0";
+            option.text = "Seleccione una comuna";
+            selectComunas.add(option);
+            comunasFiltradas.forEach((comuna) => {
+              const option = document.createElement("option");
+              option.value = comuna.idCOMUNA;
+              option.text = comuna.nombreCOMUNA;
+              selectComunas.add(option);
+            });
+          },
+          error: function (xhr, status, error) {
+            console.log(error); // Manejar el error si lo hay
+          },
+        });
+      }
+
+      //funcion para obtener los candidatos y llenar el select
+      function obtenerCandidato() {
+        $.ajax({
+          type: "GET",
+          url: "formulario.php",
+          dataType: "json",
+          success: function (data) {
+            const selectRegiones = document.getElementById("candidato");
+            data["candidatos"].forEach((candidato) => {
+              const option = document.createElement("option");
+              option.value = candidato.idCANDIDATO;
+              option.text = candidato.nombreCANDIDATO;
+              selectRegiones.add(option);
+            });
+          },
+          error: function (xhr, status, error) {
+            console.log(error); // Manejar el error si lo hay
+          },
+        });
+      }
+
+      //funcion para obtener las opciones de como se enteró y generar los checkbox
+       // Contador para el número de checkboxes seleccionados
+        let contadorSeleccionados = 0;
+      function obtenerOpcion() {
+        $.ajax({
+          type: "GET",
+          url: "formulario.php",
+          dataType: "json",
+          success: function (data) {
+            const opcionesContainer =
+              document.getElementById("opciones-container");
+            data["opciones"].forEach((opcion) => {
+              const label = document.createElement("label");
+              const checkbox = document.createElement("input");
+              checkbox.type = "checkbox";
+              checkbox.name = opcion.nombreOPCION;
+              checkbox.value = opcion.idOPCION_ENTERAR;
+              // Agregar evento click a cada checkbox
+              checkbox.addEventListener("click", () => {
+                // Si el checkbox está seleccionado, incrementar el contador
+                // Si no, decrementar el contador
+                contadorSeleccionados += checkbox.checked ? 1 : -1;
+              });
+
+              label.appendChild(checkbox);
+              label.appendChild(document.createTextNode(opcion.nombreOPCION));
+              opcionesContainer.appendChild(label);
+            });
+          },
+          error: function (xhr, status, error) {
+            console.log(error); // Manejar el error si lo hay
+          },
+        });
+      }
+
+      //Se llama a las funciones
+      obtenerRegion();
+      obtenerCandidato();
+      obtenerOpcion();
+      // Event listener para detectar cuando se selecciona una región
+      region.addEventListener("change", function () {
+        // Obtener el id de la región seleccionada
+        var regionId = region.value;
+        // Si se seleccionó una región válida, obtener sus comunas
+        if (regionId) {
+          obtenerComuna(regionId);
+        }
+      });
+
+      //funcion que valida que el alias cumpla con los requerimientos
+      function validarAlias() {
+        var alias = document.getElementById("alias").value;
+        var regex = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{5,}$/; // Expresión regular para validar al menos una letra y un número, y al menos 5 caracteres
+        if (regex.test(alias)) {
+          return true;
+        } else {
+          alert(
+            "El Alias debe tener al menos 5 caracteres y debe contener letras y números."
+          );
+          return false;
+        }
+      }
+
+      //funcion que valida el formato del rut
+      function formatoRUT() {
+        $("#rut").inputmask({
+          mask: "9[9.999.999]-[9|K|k]",
+        });
+      }
+
+        // Agregar evento submit al formulario
+  const form = document.getElementById("formulario");
+  form.addEventListener("submit", (event) => {
+    // Evitar que el formulario se envíe automáticamente
+    event.preventDefault();
+
+    // Verificar que al menos 2 checkboxes han sido seleccionados
+    if (contadorSeleccionados < 2) {
+      alert("Seleccione al menos dos opciones");
+      return;
+    }
+
+    // Obtener los valores de los campos del formulario
+    const nombre = form.elements["nombre"].value;
+    const alias = form.elements["alias"].value;
+    const rut = form.elements["rut"].value;
+    const email = form.elements["email"].value;
+    const region = form.elements["region"].value;
+    const comuna = form.elements["comuna"].value;
+    const candidato = form.elements["candidato"].value;
+
+    // Obtener los valores seleccionados de los checkboxes
+    const checkboxesSeleccionados = Array.from(
+      document.querySelectorAll('input[type="checkbox"]:checked')
+    ).map((checkbox) => checkbox.value);
+     // Enviar los datos al servidor mediante una solicitud POST
+    $.ajax({
+      type: "POST",
+      url: "formulario.php",
+      data: {
+        nombre,
+        alias,
+        rut,
+        email,
+        region,
+        comuna,
+        candidato,
+        opciones: checkboxesSeleccionados,
+      },
+      success: function (response) {
+        resp = JSON.parse(response);
+        if (resp.codigo == 200){
+            alert(resp.mensaje);
+            location.reload();
+        }else{
+            alert("No se pude realizar su votación: "+resp.mensaje);
+        }
+      },
+      error: function (xhr, status, error) {
+        console.log(error); // Manejar el error si lo hay
+      },
+    }); 
+  });
+    </script>
+  </body>
+</html>
