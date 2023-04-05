@@ -43,7 +43,7 @@ Para utilizar la aplicación, se deben seguir los siguientes pasos:
     $password = "";
     $dbname = "DESIS";
     ```
-5. Abrir formulario.php en el navegador:
+5. Abrir formulario.php en el navegador y mantenerla abierta para la ejecución:
 
     En el navegador introducir la dirección del archivo 
     
