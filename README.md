@@ -9,6 +9,9 @@ En este proyecto se desarrollara un formulario de votación en PHP, que permitir
 - PHP  == 8.2.0
 - MySQL == 8.2.0
 
+## Bases de datos
+El proyecto usa MySql por ende se debe ejecutar los script en un motor compatible con MySQL
+
 ## Como usar la aplicación
 Para utilizar la aplicación, se deben seguir los siguientes pasos:
 
@@ -20,22 +23,39 @@ Para utilizar la aplicación, se deben seguir los siguientes pasos:
 
 2. Instalar XAMPP:
 
+    Ingresar a su pagina web y descargar: 
+
     ```
-    Ingresar a su pagina web y desacargar: https://www.apachefriends.org/es/index.html
+    https://www.apachefriends.org/es/index.html
     ```
 3. Configurar XAMPP:
 
-    ```
     Configurar XAMPP y elegir en que carpeta se ejecutara el proyecto 
-    ```
 
-4. Abrir formulario.php en el navegador:
+4. Configurar Bases de datos:
+    
+    En formulario.php se deben cambiar las credenciales para la conexión con la bases de datos
 
+    Ejemplo: 
     ```
-    En el navegador introducir la dirección del archivo ej: http://localhost/repositorios/DESIS-DIAGNOSTICO/formulario.php
+    $servername = "127.0.0.1";
+    $username = "root";
+    $password = "";
+    $dbname = "DESIS";
     ```
-5. Abrir formulario.html en el navegador:
+5. Abrir formulario.php en el navegador:
 
+    En el navegador introducir la dirección del archivo 
+    
+    Ejemplo:
     ```
-    En el navegador introducir la dirección del archivo ej: http://localhost/repositorios/DESIS-DIAGNOSTICO/formulario.html
+    http://localhost/repositorios/DESIS-DIAGNOSTICO/formulario.php
+    ```
+6. Abrir formulario.html en el navegador:
+
+    En el navegador introducir la dirección del archivo 
+    
+    Ejemplo:
+    ```
+    http://localhost/repositorios/DESIS-DIAGNOSTICO/formulario.html
     ```
